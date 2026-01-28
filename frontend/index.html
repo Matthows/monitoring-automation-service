@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoraggio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .status-ok { color: green; font-weight: bold; }
+        .status-alert { color: red; font-weight: bold; }
+        .card-custom { border-left: 5px solid #0d6efd; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">📊 Monitoring & Automation Service</a>
+            <span class="navbar-text text-white" id="last-update">Aggiornamento...</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- KPI Cards -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card card-custom shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted">Media Temperatura</h5>
+                        <h2 id="avg-temp">-- °C</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom shadow-sm" style="border-left-color: #198754;">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted">Totale Letture</h5>
+                        <h2 id="total-readings">--</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-custom shadow-sm" style="border-left-color: #dc3545;">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted">Stato Sistema</h5>
+                        <h2 id="system-status" class="status-ok">ONLINE</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">📡 Dati in Tempo Reale (Ultimi 20)</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Device ID</th>
+                                <th>Temperatura (°C)</th>
+                                <th>Umidità (%)</th>
+                                <th>Stato</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "/api/data";
+        const STATS_URL = "/api/stats";
+
+        async function fetchData() {
+            try {
+                // 1. Fetch Table Data
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                
+                const tableBody = document.getElementById("data-table-body");
+                tableBody.innerHTML = "";
+
+                data.forEach(item => {
+                    const row = document.createElement("tr");
+                    const date = new Date(item.timestamp).toLocaleString();
+                    const statusClass = item.temperature > 30 ? "text-danger fw-bold" : "text-success";
+                    const statusText = item.temperature > 30 ? "⚠️ ALERT" : "OK";
+
+                    row.innerHTML = `
+                        <td>${date}</td>
+                        <td>${item.device_id}</td>
+                        <td class="${item.temperature > 30 ? 'table-danger' : ''}">${item.temperature}</td>
+                        <td>${item.humidity}</td>
+                        <td class="${statusClass}">${statusText}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // 2. Fetch Statistics
+                const resStats = await fetch(STATS_URL);
+                const stats = await resStats.json();
+                
+                document.getElementById("avg-temp").innerText = stats.avg_temp + " °C";
+                document.getElementById("total-readings").innerText = stats.count;
+                document.getElementById("last-update").innerText = "Ultimo sync: " + new Date().toLocaleTimeString();
+
+            } catch (error) {
+                console.error("Errore fetch:", error);
+                document.getElementById("system-status").innerText = "OFFLINE";
+                document.getElementById("system-status").className = "status-alert";
+            }
+        }
+
+        // Update every 2 seconds
+        setInterval(fetchData, 2000);
+        fetchData();
+    </script>
+</body>
+</html>
