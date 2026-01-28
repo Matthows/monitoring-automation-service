@@ -10,7 +10,11 @@ It is designed to showcase skills in:
 
 ### 🎥 Dashboard & System Demo
 
-<video src="MediaPreview/VideoPreview.mp4" controls title="System Demo" width="100%"></video>
+
+https://github.com/user-attachments/assets/d9e58650-22f0-4469-a440-bee9c03d3154
+
+
+
 
 ### 🔔 Telegram Notifications
 ![Telegram Notifications](MediaPreview/TelegramPreview.png)
