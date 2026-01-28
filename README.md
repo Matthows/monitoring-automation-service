@@ -9,9 +9,9 @@ It is designed to showcase skills in:
 ## 📸 Preview
 
 ### 🎥 Dashboard & System Demo
-<video src="MediaPreview/VideoPreview.mp4" controls width="100%"></video>
-
-*(Note: If the video doesn't play in your viewer, you can [open it directly](MediaPreview/VideoPreview.mp4))*
+> **Note**: GitHub does not support embedded videos in README files.
+> 
+> [**👉 Click here to watch the Video Preview**](MediaPreview/VideoPreview.mp4)
 
 ### 🔔 Telegram Notifications
 ![Telegram Notifications](MediaPreview/TelegramPreview.png)
